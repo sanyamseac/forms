@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  scylladb:
+    image: scylladb/scylla:5.1
+    ports:
+      - "9042:9042"
+    volumes:
+      - scylla-data:/var/lib/scylla
+    environment:
+      - SCYLLA_DEVELOPER_MODE=1
+    command: ["--smp", "1"]
+
+  form-portal:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SCYLLA_URI=scylladb:9042
+      - HOST=0.0.0.0
+      - BIND=0.0.0.0
+      - SERVER_HOST=0.0.0.0
+      - LISTEN_ADDR=0.0.0.0
+      - LISTEN_ADDRESS=0.0.0.0
+      - ADDRESS=0.0.0.0
+    depends_on:
+      - scylladb
+
+volumes:
+  scylla-data:
